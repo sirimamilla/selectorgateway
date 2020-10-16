@@ -9,6 +9,9 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.MessageBuilder;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -22,6 +25,10 @@ class SelectorgatewayApplicationTests {
   @Qualifier("selectingGatewayInterceptor.input")
   @Autowired
   MessageChannel selectorAdviceChannel;
+
+  @Qualifier("loopingGateway.input")
+  @Autowired
+  MessageChannel loopingChannel;
 
   @Test
   void contextLoads() {}
@@ -73,12 +80,31 @@ class SelectorgatewayApplicationTests {
   }
 
   @Test
+  void loopingGatewayTest() {
+
+    QueueChannel replychannel = new QueueChannel();
+    Message message =
+            MessageBuilder.withPayload("test")
+                    .setHeader("filter", true)
+                    .setReplyChannel(replychannel)
+                    .build();
+
+    loopingChannel.send(message);
+    Message<?> respMessage = replychannel.receive(10_000L);
+
+    assertThat(respMessage).extracting(Message::getPayload)
+            .isInstanceOf(List.class)
+            .hasFieldOrPropertyWithValue("size", 4);
+    assertThat(((List)respMessage.getPayload())).containsExactly("TEST", "TEST", "TEST", "TEST");
+  }
+
+  @Test
   void gatewayAdviceFilterTest() {
 
     QueueChannel replychannel = new QueueChannel();
     Message message = MessageBuilder.withPayload("test").setReplyChannel(replychannel).build();
 
-	  selectorAdviceChannel.send(message);
+    selectorAdviceChannel.send(message);
     Message<?> respMessage = replychannel.receive(10_000L);
 
     assertNotNull(respMessage);
