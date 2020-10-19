@@ -1,22 +1,21 @@
 package com.siri.spring.integration.selectorgateway;
 
-import lombok.Builder;
 import org.springframework.integration.core.GenericSelector;
 import org.springframework.integration.handler.advice.AbstractRequestHandlerAdvice;
 import org.springframework.messaging.Message;
 
 public class SelectingRequestHandlerAdvice extends AbstractRequestHandlerAdvice {
 
-    GenericSelector<Message> selector;
+    GenericSelector<Message<?>> selector;
 
 
 
 
-    public SelectingRequestHandlerAdvice(GenericSelector<Message> selector) {
+    public SelectingRequestHandlerAdvice(GenericSelector<Message<?>> selector) {
         this.selector = selector;
     }
-    public SelectingRequestHandlerAdvice(String headername, Object value) {
-        this(m->value.equals(m.getHeaders().get(headername)));
+    public SelectingRequestHandlerAdvice(String headerName, Object value) {
+        this(m->value.equals(m.getHeaders().get(headerName)));
     }
 
     @Override
@@ -27,9 +26,8 @@ public class SelectingRequestHandlerAdvice extends AbstractRequestHandlerAdvice 
         }
 
 
-        if(execute){
-            Object response = callback.execute();
-            return response;
+        if(Boolean.TRUE.equals(execute)){
+            return callback.execute();
         }
 
 

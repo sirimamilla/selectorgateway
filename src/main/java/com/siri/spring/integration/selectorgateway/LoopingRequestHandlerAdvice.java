@@ -14,10 +14,10 @@ import java.util.List;
 public class LoopingRequestHandlerAdvice extends IntegrationObjectSupport
         implements MethodInterceptor {
 
-    GenericSelector<Message> condition=m->false;
+    GenericSelector<Message<?>> condition=m->false;
     String loopVariable="loopVariable";
 
-    public LoopingRequestHandlerAdvice(GenericSelector<Message> condition, String loopVariable) {
+    public LoopingRequestHandlerAdvice(GenericSelector<Message<?>> condition, String loopVariable) {
         this.condition = condition;
         this.loopVariable = loopVariable;
     }
@@ -26,7 +26,7 @@ public class LoopingRequestHandlerAdvice extends IntegrationObjectSupport
     public Object invoke(MethodInvocation invocation) throws Throwable {
 
         try{
-        List list=new ArrayList<>();
+        List<Object> list=new ArrayList<>();
         Message<?> message;
         if (1==invocation.getArguments().length && invocation.getArguments()[0] instanceof Message){
              message = (Message<?>) invocation.getArguments()[0];
@@ -37,7 +37,7 @@ public class LoopingRequestHandlerAdvice extends IntegrationObjectSupport
                 Object proceed = invocation.proceed();
 
                 if (proceed instanceof Message) {
-                    message=(Message) proceed;
+                    message=(Message<?>) proceed;
                     list.add(message.getPayload());
                 }
             }while(condition.accept(message));

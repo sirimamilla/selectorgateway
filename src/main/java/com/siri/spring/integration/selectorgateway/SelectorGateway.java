@@ -1,19 +1,11 @@
 package com.siri.spring.integration.selectorgateway;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.cache.caffeine.CaffeineCacheManager;
-import org.springframework.cache.interceptor.CacheableOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.integration.dsl.IntegrationFlow;
-import org.springframework.integration.handler.advice.CacheRequestHandlerAdvice;
 import org.springframework.messaging.Message;
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 // @EnableCaching
 @Configuration
@@ -23,7 +15,7 @@ public class SelectorGateway {
 
 
 
-  private static boolean fitlerCondition(Message m) {
+  private static boolean fitlerCondition(Message<?> m) {
     return "true".equals(m.getHeaders().get("filter"));
   }
 
@@ -47,9 +39,6 @@ public class SelectorGateway {
   }
 
   public String upperCase(Message<String> message) {
-    //        if(2==(int)message.getHeaders().get("v1")){
-    //            throw new RuntimeException();
-    //        }
     return message.getPayload().toUpperCase();
   }
 
@@ -63,21 +52,4 @@ public class SelectorGateway {
             .bridge();
   }
 
-
-
-
-//  @Bean
-//  public IntegrationFlow loopingGateway() {
-//    return flow ->
-//        flow.log()
-//            .gateway(
-//                "upperCase.input",
-//                e ->
-//                    e.advice(new SelectingRequestHandlerAdvice("filter", true))
-//                        .advice(
-//                            new LoopingRequestHandlerAdvice(
-//                                m -> (3 > (int) m.getHeaders().get("v1")), "v1")))
-//            .log()
-//            .bridge();
-//  }
 }

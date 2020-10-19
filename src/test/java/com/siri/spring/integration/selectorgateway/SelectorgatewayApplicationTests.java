@@ -43,8 +43,6 @@ class SelectorgatewayApplicationTests {
   @Autowired
   IntegrationFlowContext context;
 
-  @Test
-  void contextLoads() {}
 
   @Test
   void gatewayTest() {

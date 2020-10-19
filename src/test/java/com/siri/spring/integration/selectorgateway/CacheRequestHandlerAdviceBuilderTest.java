@@ -83,7 +83,8 @@ class CacheRequestHandlerAdviceBuilderTest {
 
     @Test
     void parseTimeUnitFail(){
-        Assertions.assertThatThrownBy(()->CacheRequestHandlerAdviceBuilder.parseTimeUnit(TimeUnit.MICROSECONDS));
+        Assertions.assertThatThrownBy(()->CacheRequestHandlerAdviceBuilder.parseTimeUnit(TimeUnit.MICROSECONDS))
+        .isInstanceOf(IllegalArgumentException.class);
 
     }
 }
