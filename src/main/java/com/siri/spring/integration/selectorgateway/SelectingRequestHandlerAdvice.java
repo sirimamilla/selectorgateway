@@ -5,7 +5,6 @@ import org.springframework.integration.core.GenericSelector;
 import org.springframework.integration.handler.advice.AbstractRequestHandlerAdvice;
 import org.springframework.messaging.Message;
 
-@Builder
 public class SelectingRequestHandlerAdvice extends AbstractRequestHandlerAdvice {
 
     GenericSelector<Message> selector;

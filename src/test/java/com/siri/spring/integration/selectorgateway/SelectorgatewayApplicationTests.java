@@ -94,24 +94,7 @@ class SelectorgatewayApplicationTests {
     assertEquals("TEST", respMessage.getPayload());
   }
 
-  @Test
-  void loopingGatewayTest() {
 
-    QueueChannel replychannel = new QueueChannel();
-    Message message =
-            MessageBuilder.withPayload("test")
-                    .setHeader("filter", true)
-                    .setReplyChannel(replychannel)
-                    .build();
-
-    loopingChannel.send(message);
-    Message<?> respMessage = replychannel.receive(10_000L);
-
-    assertThat(respMessage).extracting(Message::getPayload)
-            .isInstanceOf(List.class)
-            .hasFieldOrPropertyWithValue("size", 4);
-    assertThat(((List)respMessage.getPayload())).containsExactly("TEST", "TEST", "TEST", "TEST");
-  }
 
   @Test
   void gatewayAdviceFilterTest() {
@@ -126,54 +109,5 @@ class SelectorgatewayApplicationTests {
     assertEquals("test", respMessage.getPayload());
   }
 
-  @Test
-  void cahcingAdviceTest() throws InterruptedException {
 
-
-
-    QueueChannel replychannel = new QueueChannel();
-    Message message = MessageBuilder.withPayload("test").setReplyChannel(replychannel).build();
-
-    cachingChannel.send(message);
-    Message<?> respMessage = replychannel.receive(10_000L);
-
-    assertNotNull(respMessage);
-    assertEquals(1, respMessage.getPayload());
-    cachingChannel.send(message);
-    respMessage = replychannel.receive(10_000L);
-
-    assertNotNull(respMessage);
-    assertEquals(1, respMessage.getPayload());
-
-    cachingChannel.send(message);
-    respMessage = replychannel.receive(10_000L);
-
-    assertNotNull(respMessage);
-    assertEquals(1, respMessage.getPayload());
-    cachingChannel.send(message);
-    respMessage = replychannel.receive(10_000L);
-
-    assertNotNull(respMessage);
-    assertEquals(1, respMessage.getPayload());
-    cachingChannel.send(message);
-    respMessage = replychannel.receive(10_000L);
-
-    assertNotNull(respMessage);
-    assertEquals(1, respMessage.getPayload());
-
-    Thread.sleep(1_000);
-    cachingChannel.send(message);
-    Message<?> message1 = replychannel.receive(10_000L);
-    assertNotNull(message1);
-    assertEquals(2, message1.getPayload());
-
-//    cachingChannel1.send(message);
-//    message1 = replychannel.receive(10_000L);
-//    assertNotNull(message1);
-//    assertEquals(3, message1.getPayload());
-//    cachingChannel1.send(message);
-//    message1 = replychannel.receive(10_000L);
-//    assertNotNull(message1);
-//    assertEquals(3, message1.getPayload());
-  }
 }
