@@ -8,12 +8,8 @@ import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.dsl.context.IntegrationFlowContext;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.support.GenericMessage;
 import org.springframework.messaging.support.MessageBuilder;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -27,6 +23,10 @@ class SelectorgatewayApplicationTests {
   @Qualifier("selectingGatewayInterceptor.input")
   @Autowired
   MessageChannel selectorAdviceChannel;
+
+  @Qualifier("nullHandlingGatewayInterceptor.input")
+  @Autowired
+  MessageChannel nullHandlingGatewayInterceptorChannel;
 
   @Qualifier("loopingGateway.input")
   @Autowired
@@ -105,6 +105,21 @@ class SelectorgatewayApplicationTests {
 
     assertNotNull(respMessage);
     assertEquals("test", respMessage.getPayload());
+  }
+  @Test
+  void nullHandlingAdviceFilterTest() {
+
+    QueueChannel replychannel = new QueueChannel();
+    Message message = MessageBuilder.withPayload("test").setReplyChannel(replychannel).build();
+
+    nullHandlingGatewayInterceptorChannel.send(message);
+    nullHandlingGatewayInterceptorChannel.send(message);
+    nullHandlingGatewayInterceptorChannel.send(message);
+    nullHandlingGatewayInterceptorChannel.send(message);
+    Message<?> respMessage = replychannel.receive(1000L);
+
+    assertNotNull(respMessage);
+    assertEquals("TEST", respMessage.getPayload());
   }
 
 

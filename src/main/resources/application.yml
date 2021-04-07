@@ -1,0 +1,11 @@
+com:
+  citi:
+    api:
+      custom:
+        gateway:
+          timeout:
+            config:
+              - name: nullHandlingGatewayInterceptor.message-handler#0
+                timeout: 1
+              - name: nullResponse.message-handler#0
+                timeout: 1
